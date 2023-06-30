@@ -1,0 +1,17 @@
+<clickhouse>
+    <zookeeper>
+        <!-- where are the ZK nodes -->
+        <node>
+            <host>zk1</host>
+            <port>2181</port>
+        </node>
+        <node>
+            <host>zk2</host>
+            <port>2181</port>
+        </node>
+        <node>
+            <host>zk3</host>
+            <port>2181</port>
+        </node>
+    </zookeeper>
+</clickhouse>

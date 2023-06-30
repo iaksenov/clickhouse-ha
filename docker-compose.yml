@@ -1,0 +1,74 @@
+version: '3.7'
+
+services:
+
+  zk1:
+    container_name: zk1
+    hostname: zk1
+    image: bitnami/zookeeper:3.6.2
+    ports:
+      - 21811:2181
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - ZOO_SERVER_ID=1
+      - ZOO_SERVERS=0.0.0.0:2888:3888,zk2:2888:3888,zk3:2888:3888
+  zk2:
+    container_name: zk2
+    hostname: zk2
+    image: bitnami/zookeeper:3.6.2
+    ports:
+      - 21812:2181
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - ZOO_SERVER_ID=2
+      - ZOO_SERVERS=zk1:2888:3888,0.0.0.0:2888:3888,zk3:2888:3888
+  zk3:
+    container_name: zk3
+    hostname: zk3
+    image: bitnami/zookeeper:3.6.2
+    ports:
+      - 21813:2181
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - ZOO_SERVER_ID=3
+      - ZOO_SERVERS=zk1:2888:3888,zk2:2888:3888,0.0.0.0:2888:3888
+
+  zoonavigator:
+    container_name: zoonavigator
+    image: elkozmon/zoonavigator
+    ports:
+      - 9010:9000
+
+  ch1:
+    container_name: ch1
+    hostname: ch1
+    image: clickhouse/clickhouse-server:22.4.3.3
+    volumes:
+      - ./conf1/network-and-logging.xml:/etc/clickhouse-server/config.d/network-and-logging.xml
+      - ./conf1/macros.xml:/etc/clickhouse-server/config.d/macros.xml
+      - ./conf1/remote-servers.xml:/etc/clickhouse-server/config.d/remote-servers.xml
+      - ./conf1/use-keeper.xml:/etc/clickhouse-server/config.d/use-keeper.xml
+    ports:
+      - 18123:8123
+      - 19000:9000
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
+
+  ch2:
+    container_name: ch2
+    hostname: ch2
+    image: clickhouse/clickhouse-server:22.4.3.3
+    volumes:
+      - ./conf2/network-and-logging.xml:/etc/clickhouse-server/config.d/network-and-logging.xml
+      - ./conf2/macros.xml:/etc/clickhouse-server/config.d/macros.xml
+      - ./conf2/remote-servers.xml:/etc/clickhouse-server/config.d/remote-servers.xml
+      - ./conf2/use-keeper.xml:/etc/clickhouse-server/config.d/use-keeper.xml
+    ports:
+      - 18124:8123
+      - 19001:9000
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
