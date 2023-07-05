@@ -1,0 +1,9 @@
+entryPoints:
+  http:
+    address: ":80"
+api:
+  dashboard: true
+providers:
+  file:
+    directory: /custom
+    watch: true
