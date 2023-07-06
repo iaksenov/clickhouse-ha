@@ -2,6 +2,6 @@
     <macros>
         <shard>01</shard>
         <replica>02</replica>
-        <cluster>cluster_1S_2R</cluster>
+        <cluster>sls_dwh_cluster</cluster>
     </macros>
 </clickhouse>

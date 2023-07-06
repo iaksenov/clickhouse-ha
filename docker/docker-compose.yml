@@ -33,21 +33,15 @@ services:
       - ZOO_SERVER_ID=3
       - ZOO_SERVERS=zk1:2888:3888,zk2:2888:3888,0.0.0.0:2888:3888
 
-  zoonavigator:
-    container_name: zoonavigator
-    image: elkozmon/zoonavigator
-    ports:
-      - 9010:9000
-
   ch1:
     container_name: ch1
     hostname: ch1
     image: clickhouse/clickhouse-server:22.4.3.3
     volumes:
-      - ./conf1/network-and-logging.xml:/etc/clickhouse-server/config.d/network-and-logging.xml
-      - ./conf1/macros.xml:/etc/clickhouse-server/config.d/macros.xml
-      - ./conf1/remote-servers.xml:/etc/clickhouse-server/config.d/remote-servers.xml
-      - ./conf1/use-keeper.xml:/etc/clickhouse-server/config.d/use-keeper.xml
+      - ./ch1/network-and-logging.xml:/etc/clickhouse-server/config.d/network-and-logging.xml
+      - ./ch1/macros.xml:/etc/clickhouse-server/config.d/macros.xml
+      - ./ch1/remote-servers.xml:/etc/clickhouse-server/config.d/remote-servers.xml
+      - ./ch1/use-keeper.xml:/etc/clickhouse-server/config.d/use-keeper.xml
     ports:
       - 18123:8123
       - 19000:9000
@@ -61,10 +55,10 @@ services:
     hostname: ch2
     image: clickhouse/clickhouse-server:22.4.3.3
     volumes:
-      - ./conf2/network-and-logging.xml:/etc/clickhouse-server/config.d/network-and-logging.xml
-      - ./conf2/macros.xml:/etc/clickhouse-server/config.d/macros.xml
-      - ./conf2/remote-servers.xml:/etc/clickhouse-server/config.d/remote-servers.xml
-      - ./conf2/use-keeper.xml:/etc/clickhouse-server/config.d/use-keeper.xml
+      - ./ch2/network-and-logging.xml:/etc/clickhouse-server/config.d/network-and-logging.xml
+      - ./ch2/macros.xml:/etc/clickhouse-server/config.d/macros.xml
+      - ./ch2/remote-servers.xml:/etc/clickhouse-server/config.d/remote-servers.xml
+      - ./ch2/use-keeper.xml:/etc/clickhouse-server/config.d/use-keeper.xml
     ports:
       - 18124:8123
       - 19001:9000
@@ -72,3 +66,25 @@ services:
       options:
         max-size: "10m"
         max-file: "10"
+
+  traefik:
+    container_name: traefik
+    hostname: traefik1
+    image: traefik:v2.2
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - 9090:80
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/traefik.yml
+      - ./traefik/custom/:/custom/
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.entrypoints=http"
+      - "traefik.http.routers.traefik.rule=Host(`localhost`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.services.traefik-traefik.loadbalancer.server.port=888"
+

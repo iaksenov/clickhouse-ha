@@ -1,6 +1,6 @@
 <clickhouse>
     <remote_servers replace="true">
-        <cluster_1S_2R>
+        <sls_dwh_cluster>
             <secret>mysecretphrase</secret>
             <shard>
                 <internal_replication>true</internal_replication>
@@ -13,6 +13,6 @@
                     <port>9000</port>
                 </replica>
             </shard>
-        </cluster_1S_2R>
+        </sls_dwh_cluster>
     </remote_servers>
 </clickhouse>
